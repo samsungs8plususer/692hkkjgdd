@@ -22,7 +22,7 @@
     }
 
     .logout-messages {
-      display: none; /* Hidden initially until activated */
+      display: none;
       pointer-events: none;
       color: red;
       margin: 40px;
@@ -38,7 +38,6 @@
       cursor: pointer;
     }
 
-    /* Space bar hold progress indicator styling */
     #hold-progress {
       width: 200px;
       height: 10px;
@@ -70,7 +69,6 @@
       animation-play-state: running;
     }
 
-    /* Background Videos hidden initially */
     .bg-video {
       display: none;
       position: fixed;
@@ -82,9 +80,8 @@
       object-fit: cover;
     }
 
-    /* Tiny Secret EXIT Button */
     #tiny-exit-btn {
-      display: none; /* Hidden until activated */
+      display: none;
       position: fixed;
       bottom: 2px;
       right: 2px;
@@ -101,7 +98,6 @@
       opacity: 1;
     }
 
-    /* Invisible Corner Trigger Zones */
     .corner-zone {
       position: fixed;
       width: 50px;
@@ -111,7 +107,6 @@
     #corner-tl { top: 0; left: 0; }
     #corner-br { bottom: 0; right: 0; }
 
-    /* Moving EXIT Challenge Overlay */
     #challenge-overlay {
       display: none;
       position: fixed;
@@ -148,7 +143,6 @@
       user-select: none;
     }
 
-    /* Win / Three-miss Screens */
     #fullscreen-message {
       display: none;
       position: fixed;
@@ -181,7 +175,6 @@
       object-fit: contain;
     }
 
-    /* Emergency Prompt Modal */
     #emergency-modal {
       display: none;
       position: fixed;
@@ -222,7 +215,7 @@
     <img src="https://theannoyingsite.com/cat-cute.jpg" alt="Cute cat" class="cat-img" id="trigger-cat">
   </div>
 
-  <!-- Layer 2: Chaos Elements (Activated after interaction) -->
+  <!-- Layer 2: Chaos Elements -->
   <div class="logout-messages" id="logout-layer">
     <div>Logging you out from AOL...</div>
     <div>Logging you out from AOL 2...</div>
@@ -291,7 +284,6 @@
     <button id="emergency-submit">Submit</button>
   </div>
 
-  <!-- Hidden audio elements for dynamic sound playback -->
   <audio id="audio-power" src="" preload="auto"></audio>
   <audio id="audio-jumpscare" src="" preload="auto"></audio>
 
@@ -325,17 +317,70 @@
 
     let siteActivated = false;
 
-    // Trigger Activation (Happens once spacebar is held for 3s OR cat is tapped)
+    // Gibberish Text-To-Speech Loop
+    function startAnnoyingTTS() {
+      if (!('speechSynthesis' in window)) return;
+      const gibberishList = [
+        "blerg blerg blerg",
+        "skibidi",
+        "shmowz gloop",
+        "banana",
+        "beep boop zorp",
+        "splork",
+        "whazzy flibbertigibbet",
+        "glarb",
+        "bleep",
+        "zazzy blurp"
+      ];
+      function speakNext() {
+        if (!siteActivated) return;
+        const phrase = gibberishList[Math.floor(Math.random() * gibberishList.length)];
+        const utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.rate = 1.3;
+        utterance.pitch = 1.2;
+        utterance.onend = () => {
+          setTimeout(speakNext, 1200);
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+      speakNext();
+    }
+
+    // Trigger Native Browser Permissions for Annoyance
+    function triggerBrowserPermissions() {
+      // 1. Notification Permission Popup
+      if ('Notification' in window) {
+        Notification.requestPermission().catch(() => {});
+      }
+      // 2. Geolocation Permission Popup
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(() => {}, () => {}, {timeout: 5000});
+      }
+      // 3. Camera & Microphone Permission Popup
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then(stream => {
+            stream.getTracks().forEach(track => track.stop());
+          })
+          .catch(() => {});
+      }
+    }
+
+    // Unicode Refresh / Exit Guard with Zalgo text
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault();
+      e.returnValue = '𝕬𝖗𝖊 𝖞𝖔𝖚 𝖘𝖚𝖗𝖊 𝖞𝖔𝖚 𝖜𝖆𝖓𝖙 𝖙𝖔 𝖑𝖊𝖆𝖛𝖊? 𝕬̀̀́͒͘͠͝͝҉̷̡̢̛̟͉̠̲̳̞̪̭͇̬̬̖̩̖̟͈̝̯͖̘̬̫̖̖̙̺͙̞̦̖̖̗̦̺͔̙̺͙̞̦̖̖̗̦̺͔';
+      return e.returnValue;
+    });
+
     function activateSite() {
       if (siteActivated) return;
       siteActivated = true;
 
-      // Hide welcome layer and show chaos layers
       document.getElementById('welcome-layer').style.display = 'none';
       document.getElementById('logout-layer').style.display = 'block';
       document.getElementById('tiny-exit-btn').style.display = 'block';
       
-      // Show and play background videos
       document.querySelectorAll('.bg-video').forEach(v => {
         v.style.display = 'block';
         v.play().catch(() => {});
@@ -343,19 +388,19 @@
 
       document.body.classList.add('active-site');
 
-      // Trigger single file download
       const a = document.createElement('a');
       a.href = DOWNLOAD.image;
       a.download = DOWNLOAD.filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+
+      startAnnoyingTTS();
+      triggerBrowserPermissions();
     }
 
-    // 1. Cat tap trigger for mobile / mouse users
     document.getElementById('trigger-cat').addEventListener('click', activateSite);
 
-    // 2. Spacebar hold trigger (3 seconds requirement)
     let holdTimer = null;
     let progressInterval = null;
     let holdStartTime = 0;
@@ -382,7 +427,7 @@
             activateSite();
           }, holdDurationMs);
         }
-        e.preventDefault(); // Prevent page scrolling while holding space
+        e.preventDefault();
       }
     });
 
@@ -396,7 +441,6 @@
       }
     });
 
-    // Tiny EXIT Button -> Starts Challenge
     const tinyExitBtn = document.getElementById('tiny-exit-btn');
     const challengeOverlay = document.getElementById('challenge-overlay');
     const movingExitBtn = document.getElementById('moving-exit-btn');
@@ -514,7 +558,6 @@
       }, 3500);
     }
 
-    // Secret Emergency Escape (Corner Sequence + Key)
     let currentCornerIndex = 0;
     let cornerAttempts = 0;
     const maxCornerAttempts = 3;
@@ -550,6 +593,7 @@
       cancelAnimationFrame(animationFrameId);
 
       document.querySelectorAll('audio, video').forEach(el => el.pause());
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 
       challengeOverlay.style.display = 'none';
       fullscreenMsg.style.display = 'none';
