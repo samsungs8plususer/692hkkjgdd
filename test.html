@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html style="cursor: none;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Annoying Site</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0px;
+      font-family: -apple-system, BlinkMacSystemFont, "avenir next", avenir, "helvetica neue", helvetica, ubuntu, roboto, noto, "segoe ui", arial, sans-serif;
+      overflow: hidden;
+      background-color: #efd7ff;
+    }
+
+    .hello-message {
+      margin: 40px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logout-messages {
+      pointer-events: none;
+      color: red;
+      margin: 40px;
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      text-shadow: rgb(255, 255, 255) 2px 2px, rgb(0, 0, 0) 4px 4px 10px;
+      z-index: 5;
+    }
+
+    img.cat-img {
+      width: 300px;
+      cursor: pointer;
+    }
+
+    @keyframes blurslowly { 
+      0% { filter: none; }
+      92% { filter: blur(0px); }
+      96% { filter: blur(1px); }
+      100% { filter: blur(0px); }
+    }
+
+    body {
+      animation-name: blurslowly;
+      animation-iteration-count: infinite;
+      animation-duration: 15s;
+      animation-play-state: running;
+    }
+
+    /* Tiny Secret EXIT Button */
+    #tiny-exit-btn {
+      position: fixed;
+      bottom: 2px;
+      right: 2px;
+      font-size: 8px;
+      padding: 1px 3px;
+      color: red;
+      background: #222;
+      border: 1px solid red;
+      cursor: pointer;
+      z-index: 99999;
+      opacity: 0.7;
+    }
+    #tiny-exit-btn:hover {
+      opacity: 1;
+    }
+
+    /* Invisible Corner Trigger Zones */
+    .corner-zone {
+      position: fixed;
+      width: 50px;
+      height: 50px;
+      z-index: 100000;
+      /* background: rgba(255,0,0,0.2); Uncomment for debugging */
+    }
+    #corner-tl { top: 0; left: 0; }
+    #corner-br { bottom: 0; right: 0; }
+
+    /* Moving EXIT Challenge Overlay */
+    #challenge-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #efd7ff;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    #miss-counter {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #moving-exit-btn {
+      position: absolute;
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      background-color: red;
+      color: white;
+      border: 4px solid darkred;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+
+    /* Win / Three-miss Screens */
+    #fullscreen-message {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      color: white;
+      z-index: 20000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    #fullscreen-message h1 {
+      font-size: 48px;
+      margin: 10px 0;
+    }
+
+    #fullscreen-message p {
+      font-size: 20px;
+      color: #ccc;
+    }
+
+    #fullscreen-message img {
+      max-width: 80%;
+      max-height: 80%;
+      object-fit: contain;
+    }
+
+    /* Emergency Prompt Modal */
+    #emergency-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #333;
+      color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      border: 2px solid #555;
+      z-index: 300000;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+    #emergency-modal input {
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 200px;
+    }
+    #emergency-modal button {
+      padding: 8px 16px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Original Content Template -->
+  <div class="hello-message">
+    <h1>Hi there!</h1>
+    <h2>To get started, HOLD DOWN the space key for 3 seconds.</h2>
+    <h3>(or, on mobile, tap the cat!)</h3>
+
+    <img src="https://theannoyingsite.com/cat-cute.jpg" alt="Cute cat" class="cat-img" id="trigger-cat">
+  </div>
+
+  <div class="logout-messages">
+    <div>Logging you out from AOL...</div>
+    <div>Logging you out from AOL 2...</div>
+    <div>Logging you out from Amazon...</div>
+    <div>Logging you out from Blogger...</div>
+    <div>Logging you out from Delicious...</div>
+    <div>Logging you out from DeviantART...</div>
+    <div>Logging you out from DreamHost...</div>
+    <div>Logging you out from Dropbox...</div>
+    <div>Logging you out from eBay...</div>
+    <div>Logging you out from Gandi...</div>
+    <div>Logging you out from GitHub...</div>
+    <div>Logging you out from GMail...</div>
+    <div>Logging you out from Google...</div>
+    <div>Logging you out from Hulu...</div>
+    <div>Logging you out from Instapaper...</div>
+    <div>Logging you out from Linode...</div>
+    <div>Logging you out from LiveJournal...</div>
+    <div>Logging you out from MySpace...</div>
+    <div>Logging you out from NetFlix...</div>
+    <div>Logging you out from New York Times...</div>
+    <div>Logging you out from Newegg...</div>
+    <div>Logging you out from Photobucket...</div>
+    <div>Logging you out from Skype...</div>
+    <div>Logging you out from Slashdot...</div>
+    <div>Logging you out from SoundCloud...</div>
+    <div>Logging you out from Steam Community...</div>
+    <div>Logging you out from Steam Store...</div>
+    <div>Logging you out from ThinkGeek...</div>
+    <div>Logging you out from Threadless...</div>
+    <div>Logging you out from Tumblr...</div>
+    <div>Logging you out from Vimeo...</div>
+    <div>Logging you out from Wikipedia...</div>
+    <div>Logging you out from Windows Live...</div>
+    <div>Logging you out from Woot...</div>
+    <div>Logging you out from Wordpress...</div>
+    <div>Logging you out from Yahoo...</div>
+    <div>Logging you out from YouTube...</div>
+  </div>
+
+  <video src="https://theannoyingsite.com/albundy.mp4" loop autoplay style="position: fixed; width: 1px; height: 1px; overflow: hidden; top: -10px; left: -10px;"></video>
+  <video src="https://theannoyingsite.com/badger.mp4" autoplay loop style="width: 100%; height: 100%; position: fixed; top: 0; left: 0; z-index: -1;"></video>
+
+  <!-- Tiny Secret EXIT Button -->
+  <button id="tiny-exit-btn">EXIT</button>
+
+  <!-- Emergency Corner Trigger Zones -->
+  <div id="corner-tl" class="corner-zone" data-corner="top-left"></div>
+  <div id="corner-br" class="corner-zone" data-corner="bottom-right"></div>
+
+  <!-- Moving EXIT Challenge Overlay -->
+  <div id="challenge-overlay">
+    <div id="miss-counter">Misses: 0 / 3</div>
+    <button id="moving-exit-btn">EXIT</button>
+  </div>
+
+  <!-- Fullscreen Messages / Sequencer Container -->
+  <div id="fullscreen-message"></div>
+
+  <!-- Emergency Prompt Modal -->
+  <div id="emergency-modal">
+    <h3>Emergency Escape</h3>
+    <p>Enter secret key to restore website:</p>
+    <input type="password" id="emergency-input" autocomplete="off">
+    <br>
+    <button id="emergency-submit">Submit</button>
+  </div>
+
+  <!-- Hidden audio elements for dynamic sound playback -->
+  <audio id="audio-power" src="" preload="auto"></audio>
+  <audio id="audio-jumpscare" src="" preload="auto"></audio>
+
+  <script>
+    // ================= CONFIGURATION SECTION =================
+    const CONFIG = {
+        initialExitSpeed: 3,
+        speedIncreasePerMiss: 2,
+        maximumExitSpeed: 18,
+        maximumMisses: 3
+    };
+
+    const ASSETS = {
+        powerOutageSound: "assets/sounds/power-outage.mp3",
+        jumpscareImage: "assets/images/jumpscare.jpg",
+        jumpscareSound: "assets/sounds/jumpscare.mp3",
+        finalImage: "assets/images/safe-to-turn-off.jpg"
+    };
+
+    const DOWNLOAD = {
+        image: "assets/images/cat-cross-eyed.png",
+        filename: "cat-cross-eyed.png"
+    };
+
+    const EMERGENCY_KEY = "x6Hc0$";
+    const CORNER_SEQUENCE = ["top-left", "top-left", "bottom-right", "bottom-right"];
+    // =========================================================
+
+    // Set audio sources dynamically from ASSETS
+    document.getElementById('audio-power').src = ASSETS.powerOutageSound;
+    document.getElementById('audio-jumpscare').src = ASSETS.jumpscareSound;
+
+    // Single Image Download Trigger Logic (e.g. on cat click or space hold)
+    let downloadedOnce = false;
+    function triggerSingleDownload() {
+      if (downloadedOnce) return;
+      downloadedOnce = true;
+      const a = document.createElement('a');
+      a.href = DOWNLOAD.image;
+      a.download = DOWNLOAD.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    document.getElementById('trigger-cat').addEventListener('click', triggerSingleDownload);
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        triggerSingleDownload();
+      }
+    });
+
+    // Tiny EXIT Button -> Starts Challenge
+    const tinyExitBtn = document.getElementById('tiny-exit-btn');
+    const challengeOverlay = document.getElementById('challenge-overlay');
+    const movingExitBtn = document.getElementById('moving-exit-btn');
+    const missCounterEl = document.getElementById('miss-counter');
+    const fullscreenMsg = document.getElementById('fullscreen-message');
+
+    let misses = 0;
+    let currentSpeed = CONFIG.initialExitSpeed;
+    let posX = 100, posY = 100;
+    let velX = CONFIG.initialExitSpeed, velY = CONFIG.initialExitSpeed;
+    let challengeActive = false;
+    let animationFrameId = null;
+
+    tinyExitBtn.addEventListener('click', () => {
+      challengeOverlay.style.display = 'block';
+      challengeActive = true;
+      initChallenge();
+    });
+
+    function initChallenge() {
+      posX = Math.random() * (window.innerWidth - 150);
+      posY = Math.random() * (window.innerHeight - 100);
+      velX = (Math.random() > 0.5 ? 1 : -1) * currentSpeed;
+      velY = (Math.random() > 0.5 ? 1 : -1) * currentSpeed;
+      updateMissCounter();
+      animLoop();
+    }
+
+    function updateMissCounter() {
+      missCounterEl.textContent = `Misses: ${misses} / ${CONFIG.maximumMisses}`;
+    }
+
+    function animLoop() {
+      if (!challengeActive) return;
+
+      posX += velX;
+      posY += velY;
+
+      if (posX <= 0 || posX + movingExitBtn.offsetWidth >= window.innerWidth) {
+        velX *= -1;
+        posX = Math.max(0, Math.min(posX, window.innerWidth - movingExitBtn.offsetWidth));
+      }
+      if (posY <= 0 || posY + movingExitBtn.offsetHeight >= window.innerHeight) {
+        velY *= -1;
+        posY = Math.max(0, Math.min(posY, window.innerHeight - movingExitBtn.offsetHeight));
+      }
+
+      movingExitBtn.style.left = posX + 'px';
+      movingExitBtn.style.top = posY + 'px';
+
+      animationFrameId = requestAnimationFrame(animLoop);
+    }
+
+    // Clicking inside challenge overlay background = Miss
+    challengeOverlay.addEventListener('click', (e) => {
+      if (!challengeActive) return;
+      if (e.target === movingExitBtn) return; // handled separately
+
+      misses++;
+      updateMissCounter();
+
+      currentSpeed = Math.min(currentSpeed + CONFIG.speedIncreasePerMiss, CONFIG.maximumExitSpeed);
+      velX = (velX > 0 ? 1 : -1) * currentSpeed;
+      velY = (velY > 0 ? 1 : -1) * currentSpeed;
+
+      if (misses >= CONFIG.maximumMisses) {
+        triggerThreeMissSequence();
+      }
+    });
+
+    // Successful click on moving EXIT button
+    movingExitBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!challengeActive) return;
+      challengeActive = false;
+      cancelAnimationFrame(animationFrameId);
+
+      challengeOverlay.style.display = 'none';
+      fullscreenMessage(`you win.`, `it is safe to leave the website now.`);
+    });
+
+    function fullscreenMessage(titleText, subText = '') {
+      fullscreenMessage.innerHTML = '';
+      fullscreenMsg.style.display = 'flex';
+      const h1 = document.createElement('h1');
+      h1.textContent = titleText;
+      fullscreenMsg.appendChild(h1);
+
+      if (subText) {
+        const p = document.createElement('p');
+        p.textContent = subText;
+        fullscreenMsg.appendChild(p);
+      }
+    }
+
+    // Three-miss dark screen sequence
+    function triggerThreeMissSequence() {
+      challengeActive = false;
+      cancelAnimationFrame(animationFrameId);
+      challengeOverlay.style.display = 'none';
+
+      // Dark background & play power outage sound
+      fullscreenMsg.style.display = 'flex';
+      fullscreenMsg.style.background = 'black';
+      fullscreenMsg.innerHTML = '';
+
+      const powerAudio = document.getElementById('audio-power');
+      powerAudio.play().catch(() => {});
+
+      // Wait a few seconds, then trigger jumpscare
+      setTimeout(() => {
+        fullscreenMsg.innerHTML = `<img src="${ASSETS.jumpscareImage}" alt="Jumpscare">`;
+        const jumpAudio = document.getElementById('audio-jumpscare');
+        jumpAudio.play().catch(() => {});
+
+        setTimeout(() => {
+          fullscreenMsg.innerHTML = `<img src="${ASSETS.finalImage}" alt="Safe to exit">`;
+        }, 2500);
+
+      }, 3500);
+    }
+
+    // Secret Emergency Escape (Corner Sequence + Key)
+    let currentCornerIndex = 0;
+    let cornerAttempts = 0;
+    const maxCornerAttempts = 3;
+    let emergencyUnlocked = false;
+
+    const cornerZones = document.querySelectorAll('.corner-zone');
+    cornerZones.forEach(zone => {
+      zone.addEventListener('click', () => {
+        if (emergencyUnlocked || cornerAttempts >= maxCornerAttempts) return;
+
+        const expectedCorner = CORNER_SEQUENCE[currentCornerIndex];
+        const clickedCorner = zone.getAttribute('data-corner');
+
+        if (clickedCorner === expectedCorner) {
+          currentCornerIndex++;
+          if (currentCornerIndex >= CORNER_SEQUENCE.length) {
+            // Sequence completed successfully! Pause everything & open emergency prompt
+            triggerEmergencyPause();
+          }
+        } else {
+          cornerAttempts++;
+          currentCornerIndex = 0; // reset sequence on mistake
+          if (cornerAttempts >= maxCornerAttempts) {
+            // Locked out permanently
+            console.log("Emergency escape locked out.");
+          }
+        }
+      });
+    });
+
+    const emergencyModal = document.getElementById('emergency-modal');
+    const emergencyInput = document.getElementById('emergency-input');
+    const emergencySubmit = document.getElementById('emergency-submit');
+
+    function triggerEmergencyPause() {
+      emergencyUnlocked = true;
+      challengeActive = false;
+      cancelAnimationFrame(animationFrameId);
+
+      // Pause all audio elements
+      document.querySelectorAll('audio, video').forEach(el => el.pause());
+
+      challengeOverlay.style.display = 'none';
+      fullscreenMsg.style.display = 'none';
+      emergencyModal.style.display = 'block';
+    }
+
+    emergencySubmit.addEventListener('click', () => {
+      const val = emergencyInput.value;
+      if (val === EMERGENCY_KEY) {
+        // Correct key: restore normal website completely
+        emergencyModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.cursor = 'default';
+        document.body.innerHTML = '<h1>Emergency Escape Activated. Website Restored.</h1>';
+      } else {
+        // Wrong key: keep paused, allow retry
+        emergencyInput.value = '';
+        alert("Incorrect key. Try again.");
+      }
+    });
+  </script>
+</body>
+</html>
