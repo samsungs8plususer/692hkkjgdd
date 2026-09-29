@@ -22,6 +22,7 @@
     }
 
     .logout-messages {
+      display: none; /* Hidden initially until activated */
       pointer-events: none;
       color: red;
       margin: 40px;
@@ -37,6 +38,24 @@
       cursor: pointer;
     }
 
+    /* Space bar hold progress indicator styling */
+    #hold-progress {
+      width: 200px;
+      height: 10px;
+      background: #ddd;
+      border: 2px solid #333;
+      margin: 15px auto;
+      border-radius: 5px;
+      overflow: hidden;
+      display: none;
+    }
+    #hold-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: green;
+      transition: width 0.1s linear;
+    }
+
     @keyframes blurslowly { 
       0% { filter: none; }
       92% { filter: blur(0px); }
@@ -44,15 +63,28 @@
       100% { filter: blur(0px); }
     }
 
-    body {
+    body.active-site {
       animation-name: blurslowly;
       animation-iteration-count: infinite;
       animation-duration: 15s;
       animation-play-state: running;
     }
 
+    /* Background Videos hidden initially */
+    .bg-video {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+
     /* Tiny Secret EXIT Button */
     #tiny-exit-btn {
+      display: none; /* Hidden until activated */
       position: fixed;
       bottom: 2px;
       right: 2px;
@@ -75,7 +107,6 @@
       width: 50px;
       height: 50px;
       z-index: 100000;
-      /* background: rgba(255,0,0,0.2); Uncomment for debugging */
     }
     #corner-tl { top: 0; left: 0; }
     #corner-br { bottom: 0; right: 0; }
@@ -182,16 +213,17 @@
 </head>
 <body>
 
-  <!-- Original Content Template -->
-  <div class="hello-message">
+  <!-- Layer 1: Initial Welcome Screen -->
+  <div class="hello-message" id="welcome-layer">
     <h1>Hi there!</h1>
     <h2>To get started, HOLD DOWN the space key for 3 seconds.</h2>
     <h3>(or, on mobile, tap the cat!)</h3>
-
+    <div id="hold-progress"><div id="hold-progress-bar"></div></div>
     <img src="https://theannoyingsite.com/cat-cute.jpg" alt="Cute cat" class="cat-img" id="trigger-cat">
   </div>
 
-  <div class="logout-messages">
+  <!-- Layer 2: Chaos Elements (Activated after interaction) -->
+  <div class="logout-messages" id="logout-layer">
     <div>Logging you out from AOL...</div>
     <div>Logging you out from AOL 2...</div>
     <div>Logging you out from Amazon...</div>
@@ -231,8 +263,8 @@
     <div>Logging you out from YouTube...</div>
   </div>
 
-  <video src="https://theannoyingsite.com/albundy.mp4" loop autoplay style="position: fixed; width: 1px; height: 1px; overflow: hidden; top: -10px; left: -10px;"></video>
-  <video src="https://theannoyingsite.com/badger.mp4" autoplay loop style="width: 100%; height: 100%; position: fixed; top: 0; left: 0; z-index: -1;"></video>
+  <video id="vid-albundy" class="bg-video" src="https://theannoyingsite.com/albundy.mp4" loop autoplay></video>
+  <video id="vid-badger" class="bg-video" src="https://theannoyingsite.com/badger.mp4" loop autoplay></video>
 
   <!-- Tiny Secret EXIT Button -->
   <button id="tiny-exit-btn">EXIT</button>
@@ -288,15 +320,30 @@
     const CORNER_SEQUENCE = ["top-left", "top-left", "bottom-right", "bottom-right"];
     // =========================================================
 
-    // Set audio sources dynamically from ASSETS
     document.getElementById('audio-power').src = ASSETS.powerOutageSound;
     document.getElementById('audio-jumpscare').src = ASSETS.jumpscareSound;
 
-    // Single Image Download Trigger Logic (e.g. on cat click or space hold)
-    let downloadedOnce = false;
-    function triggerSingleDownload() {
-      if (downloadedOnce) return;
-      downloadedOnce = true;
+    let siteActivated = false;
+
+    // Trigger Activation (Happens once spacebar is held for 3s OR cat is tapped)
+    function activateSite() {
+      if (siteActivated) return;
+      siteActivated = true;
+
+      // Hide welcome layer and show chaos layers
+      document.getElementById('welcome-layer').style.display = 'none';
+      document.getElementById('logout-layer').style.display = 'block';
+      document.getElementById('tiny-exit-btn').style.display = 'block';
+      
+      // Show and play background videos
+      document.querySelectorAll('.bg-video').forEach(v => {
+        v.style.display = 'block';
+        v.play().catch(() => {});
+      });
+
+      document.body.classList.add('active-site');
+
+      // Trigger single file download
       const a = document.createElement('a');
       a.href = DOWNLOAD.image;
       a.download = DOWNLOAD.filename;
@@ -305,10 +352,47 @@
       document.body.removeChild(a);
     }
 
-    document.getElementById('trigger-cat').addEventListener('click', triggerSingleDownload);
+    // 1. Cat tap trigger for mobile / mouse users
+    document.getElementById('trigger-cat').addEventListener('click', activateSite);
+
+    // 2. Spacebar hold trigger (3 seconds requirement)
+    let holdTimer = null;
+    let progressInterval = null;
+    let holdStartTime = 0;
+    const holdDurationMs = 3000;
+
+    const progressBar = document.getElementById('hold-progress-bar');
+    const holdProgressContainer = document.getElementById('hold-progress');
+
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        triggerSingleDownload();
+      if (e.code === 'Space' && !siteActivated) {
+        if (!holdTimer) {
+          holdProgressContainer.style.display = 'block';
+          holdStartTime = Date.now();
+          
+          progressInterval = setInterval(() => {
+            let elapsed = Date.now() - holdStartTime;
+            let percent = Math.min(100, (elapsed / holdDurationMs) * 100);
+            progressBar.style.width = percent + '%';
+          }, 50);
+
+          holdTimer = setTimeout(() => {
+            clearInterval(progressInterval);
+            holdProgressContainer.style.display = 'none';
+            activateSite();
+          }, holdDurationMs);
+        }
+        e.preventDefault(); // Prevent page scrolling while holding space
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' && !siteActivated && holdTimer) {
+        clearTimeout(holdTimer);
+        clearInterval(progressInterval);
+        holdTimer = null;
+        progressBar.style.width = '0%';
+        holdProgressContainer.style.display = 'none';
       }
     });
 
@@ -366,10 +450,9 @@
       animationFrameId = requestAnimationFrame(animLoop);
     }
 
-    // Clicking inside challenge overlay background = Miss
     challengeOverlay.addEventListener('click', (e) => {
       if (!challengeActive) return;
-      if (e.target === movingExitBtn) return; // handled separately
+      if (e.target === movingExitBtn) return;
 
       misses++;
       updateMissCounter();
@@ -383,7 +466,6 @@
       }
     });
 
-    // Successful click on moving EXIT button
     movingExitBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!challengeActive) return;
@@ -395,7 +477,7 @@
     });
 
     function fullscreenMessage(titleText, subText = '') {
-      fullscreenMessage.innerHTML = '';
+      fullscreenMsg.innerHTML = '';
       fullscreenMsg.style.display = 'flex';
       const h1 = document.createElement('h1');
       h1.textContent = titleText;
@@ -408,13 +490,11 @@
       }
     }
 
-    // Three-miss dark screen sequence
     function triggerThreeMissSequence() {
       challengeActive = false;
       cancelAnimationFrame(animationFrameId);
       challengeOverlay.style.display = 'none';
 
-      // Dark background & play power outage sound
       fullscreenMsg.style.display = 'flex';
       fullscreenMsg.style.background = 'black';
       fullscreenMsg.innerHTML = '';
@@ -422,7 +502,6 @@
       const powerAudio = document.getElementById('audio-power');
       powerAudio.play().catch(() => {});
 
-      // Wait a few seconds, then trigger jumpscare
       setTimeout(() => {
         fullscreenMsg.innerHTML = `<img src="${ASSETS.jumpscareImage}" alt="Jumpscare">`;
         const jumpAudio = document.getElementById('audio-jumpscare');
@@ -452,16 +531,11 @@
         if (clickedCorner === expectedCorner) {
           currentCornerIndex++;
           if (currentCornerIndex >= CORNER_SEQUENCE.length) {
-            // Sequence completed successfully! Pause everything & open emergency prompt
             triggerEmergencyPause();
           }
         } else {
           cornerAttempts++;
-          currentCornerIndex = 0; // reset sequence on mistake
-          if (cornerAttempts >= maxCornerAttempts) {
-            // Locked out permanently
-            console.log("Emergency escape locked out.");
-          }
+          currentCornerIndex = 0;
         }
       });
     });
@@ -475,7 +549,6 @@
       challengeActive = false;
       cancelAnimationFrame(animationFrameId);
 
-      // Pause all audio elements
       document.querySelectorAll('audio, video').forEach(el => el.pause());
 
       challengeOverlay.style.display = 'none';
@@ -486,13 +559,11 @@
     emergencySubmit.addEventListener('click', () => {
       const val = emergencyInput.value;
       if (val === EMERGENCY_KEY) {
-        // Correct key: restore normal website completely
         emergencyModal.style.display = 'none';
         document.body.style.overflow = 'auto';
         document.documentElement.style.cursor = 'default';
         document.body.innerHTML = '<h1>Emergency Escape Activated. Website Restored.</h1>';
       } else {
-        // Wrong key: keep paused, allow retry
         emergencyInput.value = '';
         alert("Incorrect key. Try again.");
       }
