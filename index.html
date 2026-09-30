@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Annoying Site</title>
+  <title>The Cutest Site</title>
   <style>
     html, body {
       width: 100%;
@@ -114,7 +114,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: #efd7ff;
+      background: #050505;
       z-index: 9999;
       overflow: hidden;
     }
@@ -126,7 +126,13 @@
       transform: translateX(-50%);
       font-size: 24px;
       font-weight: bold;
-      color: #333;
+      color: #ff4444;
+    }
+
+    @keyframes flickerEffect {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
     }
 
     #moving-exit-btn {
@@ -139,8 +145,9 @@
       border: 4px solid darkred;
       cursor: pointer;
       border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 15px rgba(255,0,0,0.6);
       user-select: none;
+      animation: flickerEffect 0.15s infinite alternate;
     }
 
     #fullscreen-message {
@@ -209,14 +216,16 @@
   <!-- Layer 1: Initial Welcome Screen -->
   <div class="hello-message" id="welcome-layer">
     <h1>Hi there!</h1>
-    <h2>To get started, HOLD DOWN the space key for 3 seconds.</h2>
-    <h3>(or, on mobile, tap the cat!)</h3>
+    <h2>To see more cute cat images, HOLD DOWN the space key for 3 seconds.</h2>
+    <h3>(or, on mobile, tap the kitten!)</h3>
     <div id="hold-progress"><div id="hold-progress-bar"></div></div>
     <img src="https://theannoyingsite.com/cat-cute.jpg" alt="Cute cat" class="cat-img" id="trigger-cat">
   </div>
 
   <!-- Layer 2: Chaos Elements -->
   <div class="logout-messages" id="logout-layer">
+    <div>MUAHAHAHAHAHA you have fallen into my trap maybe you will learn next time not to click on random websites... good luck:o</div>
+    <div>Logging you out from Tiktok...</div>
     <div>Logging you out from AOL...</div>
     <div>Logging you out from AOL 2...</div>
     <div>Logging you out from Amazon...</div>
@@ -256,11 +265,11 @@
     <div>Logging you out from YouTube...</div>
   </div>
 
-  <video id="vid-albundy" class="bg-video" src="https://theannoyingsite.com/albundy.mp4" loop autoplay muted></video>
-  <video id="vid-badger" class="bg-video" src="https://theannoyingsite.com/badger.mp4" loop autoplay muted></video>
+  <!-- Dynamic Random Background Videos from annoyingsite.com -->
+  <video id="bg-video-player" class="bg-video" loop autoplay></video>
 
   <!-- Tiny Secret EXIT Button -->
-  <button id="tiny-exit-btn">EXIT</button>
+  <button id="tiny-exit-btn">exit</button>
 
   <!-- Emergency Corner Trigger Zones -->
   <div id="corner-tl" class="corner-zone" data-corner="top-left"></div>
@@ -268,7 +277,7 @@
 
   <!-- Moving EXIT Challenge Overlay -->
   <div id="challenge-overlay">
-    <div id="miss-counter">Misses: 0 / 3</div>
+    <div id="miss-counter">Misses: 0 / 5</div>
     <button id="moving-exit-btn">EXIT</button>
   </div>
 
@@ -278,7 +287,7 @@
   <!-- Emergency Prompt Modal -->
   <div id="emergency-modal">
     <h3>Emergency Escape</h3>
-    <p>Enter secret key to restore website:</p>
+    <p>Enter secret key to stop this mess:</p>
     <input type="password" id="emergency-input" autocomplete="off">
     <br>
     <button id="emergency-submit">Submit</button>
@@ -291,10 +300,10 @@
   <script>
     // ================= CONFIGURATION SECTION =================
     const CONFIG = {
-        initialExitSpeed: 3,
-        speedIncreasePerMiss: 2,
-        maximumExitSpeed: 18,
-        maximumMisses: 3
+        initialExitSpeed: 5,
+        speedIncreasePerMiss: 3,
+        maximumExitSpeed: 25,
+        maximumMisses: 5
     };
 
     const ASSETS = {
@@ -309,6 +318,14 @@
         filename: "cat-cross-eyed.png"
     };
 
+    // Pool of random videos from annoyingsite.com
+    const ANNOYING_VIDEOS = [
+        "https://theannoyingsite.com/albundy.mp4",
+        "https://theannoyingsite.com/badger.mp4",
+        "https://theannoyingsite.com/nyancat.mp4",
+        "https://theannoyingsite.com/dancingbaby.mp4"
+    ];
+
     const EMERGENCY_KEY = "x6Hc0$";
     const CORNER_SEQUENCE = ["top-left", "top-left", "bottom-right", "bottom-right"];
     // =========================================================
@@ -317,6 +334,13 @@
     document.getElementById('audio-musicbox').src = ASSETS.musicBoxSound;
 
     let siteActivated = false;
+
+    // StackOverflow Fibonacci function
+    function fib(x) {
+      if (x <= 0) return 0;
+      if (x == 1) return 1;
+      return fib(x-1) + fib(x-2);
+    }
 
     // Gibberish Text-To-Speech Loop
     function startAnnoyingTTS() {
@@ -331,8 +355,7 @@
         "whazzy flibbertigibbet",
         "glarb",
         "bleep",
-        "zazzy blurp",
-        "don't leave don't leave youblh 😨👈👈☝️☝️👉👈☝️☝️☝️🧢💎💎💎💎👢💍"
+        "zazzy blurp"
       ];
       function speakNext() {
         if (!siteActivated) return;
@@ -376,14 +399,20 @@
       if (siteActivated) return;
       siteActivated = true;
 
+      // Run recursive Fibonacci on activation
+      console.log("Computing CPU load...", fib(32));
+
       document.getElementById('welcome-layer').style.display = 'none';
       document.getElementById('logout-layer').style.display = 'block';
       document.getElementById('tiny-exit-btn').style.display = 'block';
       
-      document.querySelectorAll('.bg-video').forEach(v => {
-        v.style.display = 'block';
-        v.play().catch(() => {});
-      });
+      // Select and play a random video from annoyingsite.com with audio unmuted
+      const randomVideoUrl = ANNOYING_VIDEOS[Math.floor(Math.random() * ANNOYING_VIDEOS.length)];
+      const bgVideoPlayer = document.getElementById('bg-video-player');
+      bgVideoPlayer.src = randomVideoUrl;
+      bgVideoPlayer.style.display = 'block';
+      bgVideoPlayer.muted = false;
+      bgVideoPlayer.play().catch(() => {});
 
       document.body.classList.add('active-site');
 
@@ -493,6 +522,7 @@
       animationFrameId = requestAnimationFrame(animLoop);
     }
 
+    // Miss handler: teleports wildly and speeds up
     challengeOverlay.addEventListener('click', (e) => {
       if (!challengeActive) return;
       if (e.target === movingExitBtn) return;
@@ -501,11 +531,15 @@
       updateMissCounter();
 
       currentSpeed = Math.min(currentSpeed + CONFIG.speedIncreasePerMiss, CONFIG.maximumExitSpeed);
-      velX = (velX > 0 ? 1 : -1) * currentSpeed;
-      velY = (velY > 0 ? 1 : -1) * currentSpeed;
+      
+      // Wild random teleport jump on miss
+      posX = Math.random() * (window.innerWidth - 150);
+      posY = Math.random() * (window.innerHeight - 100);
+      velX = (Math.random() > 0.5 ? 1 : -1) * currentSpeed;
+      velY = (Math.random() > 0.5 ? 1 : -1) * currentSpeed;
 
       if (misses >= CONFIG.maximumMisses) {
-        triggerThreeMissSequence();
+        triggerFinalSequence();
       }
     });
 
@@ -517,6 +551,7 @@
 
       challengeOverlay.style.display = 'none';
       fullscreenMessage(`you win.`, `it is safe to leave the website now.`);
+      try { window.close(); } catch (err) {}
     });
 
     function fullscreenMessage(titleText, subText = '') {
@@ -533,7 +568,7 @@
       }
     }
 
-    function triggerThreeMissSequence() {
+    function triggerFinalSequence() {
       challengeActive = false;
       cancelAnimationFrame(animationFrameId);
       challengeOverlay.style.display = 'none';
@@ -545,31 +580,31 @@
       const powerAudio = document.getElementById('audio-power');
       const musicBoxAudio = document.getElementById('audio-musicbox');
       
-      // 1. Play power outage sound
+      // 1. Play power outage sound immediately on black screen
       powerAudio.play().catch(() => {});
 
-      // After 2 seconds, stop power sound and play music box for 5 seconds
+      // 2. Play music box for 10 seconds right after
       setTimeout(() => {
         powerAudio.pause();
         powerAudio.currentTime = 0;
 
         musicBoxAudio.play().catch(() => {});
 
-        // After 5 seconds, stop music box and trigger jumpscare video
         setTimeout(() => {
           musicBoxAudio.pause();
           musicBoxAudio.currentTime = 0;
 
+          // 3. Jumpscare video clip
           fullscreenMsg.innerHTML = `<video src="${ASSETS.jumpscareVideo}" autoplay></video>`;
 
-          // After 2.5 seconds, display retro shutdown screen
+          // 4. Final retro shutdown image from assets folder
           setTimeout(() => {
-            fullscreenMsg.innerHTML = `<img src="${ASSETS.finalImage}" alt="Safe to exit">`;
+            fullscreenMsg.innerHTML = `<img src="${ASSETS.finalImage}" alt="It is now safe to turn off your computer">`;
           }, 2500);
 
-        }, 5000); // 5 seconds of music box
+        }, 10000); // 10 seconds of music box
 
-      }, 2000); // 2 seconds of power outage
+      }, 2000); // 2 seconds of power outage sound buffer
     }
 
     let currentCornerIndex = 0;
@@ -623,7 +658,7 @@
         document.body.innerHTML = '<h1>Emergency Escape Activated. Website Restored.</h1>';
       } else {
         emergencyInput.value = '';
-        alert("Incorrect key. Try again.");
+        alert("wrong key. try again.");
       }
     });
   </script>
