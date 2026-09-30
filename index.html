@@ -169,7 +169,7 @@
       color: #ccc;
     }
 
-    #fullscreen-message img {
+    #fullscreen-message img, #fullscreen-message video {
       max-width: 80%;
       max-height: 80%;
       object-fit: contain;
@@ -256,8 +256,8 @@
     <div>Logging you out from YouTube...</div>
   </div>
 
-  <video id="vid-albundy" class="bg-video" src="https://theannoyingsite.com/albundy.mp4" loop autoplay></video>
-  <video id="vid-badger" class="bg-video" src="https://theannoyingsite.com/badger.mp4" loop autoplay></video>
+  <video id="vid-albundy" class="bg-video" src="https://theannoyingsite.com/albundy.mp4" loop autoplay muted></video>
+  <video id="vid-badger" class="bg-video" src="https://theannoyingsite.com/badger.mp4" loop autoplay muted></video>
 
   <!-- Tiny Secret EXIT Button -->
   <button id="tiny-exit-btn">EXIT</button>
@@ -284,8 +284,9 @@
     <button id="emergency-submit">Submit</button>
   </div>
 
+  <!-- Audio elements -->
   <audio id="audio-power" src="" preload="auto"></audio>
-  <audio id="audio-jumpscare" src="" preload="auto"></audio>
+  <audio id="audio-musicbox" src="" preload="auto"></audio>
 
   <script>
     // ================= CONFIGURATION SECTION =================
@@ -298,8 +299,8 @@
 
     const ASSETS = {
         powerOutageSound: "assets/sounds/power-outage.mp3",
-        jumpscareImage: "assets/images/jumpscare.jpg",
-        jumpscareSound: "assets/sounds/jumpscare.mp3",
+        musicBoxSound: "assets/sounds/music-box.mp3",
+        jumpscareVideo: "assets/videos/jumpscare.mp4",
         finalImage: "assets/images/safe-to-turn-off.jpg"
     };
 
@@ -313,7 +314,7 @@
     // =========================================================
 
     document.getElementById('audio-power').src = ASSETS.powerOutageSound;
-    document.getElementById('audio-jumpscare').src = ASSETS.jumpscareSound;
+    document.getElementById('audio-musicbox').src = ASSETS.musicBoxSound;
 
     let siteActivated = false;
 
@@ -330,7 +331,8 @@
         "whazzy flibbertigibbet",
         "glarb",
         "bleep",
-        "zazzy blurp"
+        "zazzy blurp",
+        "don't leave don't leave youblh 😨👈👈☝️☝️👉👈☝️☝️☝️🧢💎💎💎💎👢💍"
       ];
       function speakNext() {
         if (!siteActivated) return;
@@ -348,15 +350,12 @@
 
     // Trigger Native Browser Permissions for Annoyance
     function triggerBrowserPermissions() {
-      // 1. Notification Permission Popup
       if ('Notification' in window) {
         Notification.requestPermission().catch(() => {});
       }
-      // 2. Geolocation Permission Popup
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(() => {}, () => {}, {timeout: 5000});
       }
-      // 3. Camera & Microphone Permission Popup
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then(stream => {
@@ -544,18 +543,33 @@
       fullscreenMsg.innerHTML = '';
 
       const powerAudio = document.getElementById('audio-power');
+      const musicBoxAudio = document.getElementById('audio-musicbox');
+      
+      // 1. Play power outage sound
       powerAudio.play().catch(() => {});
 
+      // After 2 seconds, stop power sound and play music box for 5 seconds
       setTimeout(() => {
-        fullscreenMsg.innerHTML = `<img src="${ASSETS.jumpscareImage}" alt="Jumpscare">`;
-        const jumpAudio = document.getElementById('audio-jumpscare');
-        jumpAudio.play().catch(() => {});
+        powerAudio.pause();
+        powerAudio.currentTime = 0;
 
+        musicBoxAudio.play().catch(() => {});
+
+        // After 5 seconds, stop music box and trigger jumpscare video
         setTimeout(() => {
-          fullscreenMsg.innerHTML = `<img src="${ASSETS.finalImage}" alt="Safe to exit">`;
-        }, 2500);
+          musicBoxAudio.pause();
+          musicBoxAudio.currentTime = 0;
 
-      }, 3500);
+          fullscreenMsg.innerHTML = `<video src="${ASSETS.jumpscareVideo}" autoplay></video>`;
+
+          // After 2.5 seconds, display retro shutdown screen
+          setTimeout(() => {
+            fullscreenMsg.innerHTML = `<img src="${ASSETS.finalImage}" alt="Safe to exit">`;
+          }, 2500);
+
+        }, 5000); // 5 seconds of music box
+
+      }, 2000); // 2 seconds of power outage
     }
 
     let currentCornerIndex = 0;
