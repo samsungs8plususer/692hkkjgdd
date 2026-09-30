@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Cutest Site</title>
+  <title>The Cutest Cat Images Website</title>
   <style>
     html, body {
       width: 100%;
@@ -21,6 +21,36 @@
       z-index: 10;
     }
 
+    .setup-box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-top: 50px;
+    }
+    .setup-box input {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .setup-box button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #8a2be2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .setup-box button:hover {
+      background: #7a1ed2;
+    }
+
     .logout-messages {
       display: none;
       pointer-events: none;
@@ -29,6 +59,8 @@
       position: fixed;
       top: 0px;
       left: 0px;
+      font-weight: bold;
+      font-size: 18px;
       text-shadow: rgb(255, 255, 255) 2px 2px, rgb(0, 0, 0) 4px 4px 10px;
       z-index: 5;
     }
@@ -36,23 +68,6 @@
     img.cat-img {
       width: 300px;
       cursor: pointer;
-    }
-
-    #hold-progress {
-      width: 200px;
-      height: 10px;
-      background: #ddd;
-      border: 2px solid #333;
-      margin: 15px auto;
-      border-radius: 5px;
-      overflow: hidden;
-      display: none;
-    }
-    #hold-progress-bar {
-      width: 0%;
-      height: 100%;
-      background: green;
-      transition: width 0.1s linear;
     }
 
     @keyframes blurslowly { 
@@ -83,26 +98,27 @@
     #tiny-exit-btn {
       display: none;
       position: fixed;
-      bottom: 2px;
-      right: 2px;
-      font-size: 8px;
-      padding: 1px 3px;
-      color: red;
-      background: #222;
-      border: 1px solid red;
+      bottom: 10px;
+      right: 10px;
+      font-size: 14px;
+      padding: 6px 12px;
+      color: white;
+      background: #cc0000;
+      border: 2px solid #ff4444;
+      font-weight: bold;
       cursor: pointer;
-      z-index: 99999;
-      opacity: 0.7;
+      z-index: 999999;
+      box-shadow: 0 0 10px rgba(255,0,0,0.8);
     }
     #tiny-exit-btn:hover {
-      opacity: 1;
+      background: #ff0000;
     }
 
     .corner-zone {
       position: fixed;
-      width: 50px;
-      height: 50px;
-      z-index: 100000;
+      width: 60px;
+      height: 60px;
+      z-index: 1000000;
     }
     #corner-tl { top: 0; left: 0; }
     #corner-br { bottom: 0; right: 0; }
@@ -115,7 +131,7 @@
       width: 100%;
       height: 100%;
       background: #050505;
-      z-index: 9999;
+      z-index: 99999;
       overflow: hidden;
     }
 
@@ -159,7 +175,7 @@
       height: 100%;
       background: black;
       color: white;
-      z-index: 20000;
+      z-index: 200000;
       justify-content: center;
       align-items: center;
       flex-direction: column;
@@ -193,7 +209,7 @@
       padding: 30px;
       border-radius: 8px;
       border: 2px solid #555;
-      z-index: 300000;
+      z-index: 3000000;
       text-align: center;
       box-shadow: 0 0 20px rgba(0,0,0,0.8);
     }
@@ -213,21 +229,31 @@
 </head>
 <body>
 
-  <!-- Layer 1: Initial Welcome Screen -->
+  <!-- Layer 1: Setup & Deceptive Welcome Screen -->
   <div class="hello-message" id="welcome-layer">
-    <h1>Hi there!</h1>
-    <h2>To see more cute cat images, HOLD DOWN the space key for 3 seconds.</h2>
-    <h3>(or, on mobile, tap the kitten!)</h3>
-    <div id="hold-progress"><div id="hold-progress-bar"></div></div>
-    <img src="https://theannoyingsite.com/cat-cute.jpg" alt="Cute cat" class="cat-img" id="trigger-cat">
+    <h1>The Cutest Cat Images Website</h1>
+    
+    <!-- Step 1: Fake Username Setup -->
+    <div class="setup-box" id="setup-step">
+      <p>First of all, we just need you to make a username. This website does not require any emails or password to be made.</p>
+      <input type="text" id="username-input" placeholder="Enter username..." autocomplete="off">
+      <br>
+      <button id="submit-username">Continue</button>
+    </div>
+
+    <!-- Step 2: Cat Swiper (Hidden initially) -->
+    <div id="cat-step" style="display: none;">
+      <p id="ip-display" style="font-weight: bold; color: #333; margin-bottom: 10px;"></p>
+      <h2>Click the cat to swipe between other cat images.</h2>
+      <img src="https://theannoyingsite.com/cat-cute.jpg" alt="Cute cat" class="cat-img" id="trigger-cat">
+    </div>
   </div>
 
-  <!-- Layer 2: Chaos Elements -->
+  <!-- Layer 2: Chaos Elements with Custom Trap Message & TikTok -->
   <div class="logout-messages" id="logout-layer">
-    <div>MUAHAHAHAHAHA you have fallen into my trap maybe you will learn next time not to click on random websites... good luck:o</div>
-    <div>Logging you out from Tiktok...</div>
+    <div>Haha, you've fallen into my trap. I hope you learned your lesson never to click on random websites. Good luck.</div>
+    <div>Logging you out from TikTok (https://www.tiktok.com/login)...</div>
     <div>Logging you out from AOL...</div>
-    <div>Logging you out from AOL 2...</div>
     <div>Logging you out from Amazon...</div>
     <div>Logging you out from Blogger...</div>
     <div>Logging you out from Delicious...</div>
@@ -265,11 +291,11 @@
     <div>Logging you out from YouTube...</div>
   </div>
 
-  <!-- Dynamic Random Background Videos from annoyingsite.com -->
-  <video id="bg-video-player" class="bg-video" loop autoplay></video>
+  <!-- Dynamic Background Video Player -->
+  <video id="bg-video-player" class="bg-video" loop autoplay playsinline muted></video>
 
   <!-- Tiny Secret EXIT Button -->
-  <button id="tiny-exit-btn">exit</button>
+  <button id="tiny-exit-btn">EXIT</button>
 
   <!-- Emergency Corner Trigger Zones -->
   <div id="corner-tl" class="corner-zone" data-corner="top-left"></div>
@@ -287,7 +313,7 @@
   <!-- Emergency Prompt Modal -->
   <div id="emergency-modal">
     <h3>Emergency Escape</h3>
-    <p>Enter secret key to stop this mess:</p>
+    <p>Enter secret key to restore website:</p>
     <input type="password" id="emergency-input" autocomplete="off">
     <br>
     <button id="emergency-submit">Submit</button>
@@ -318,7 +344,6 @@
         filename: "cat-cross-eyed.png"
     };
 
-    // Pool of random videos from annoyingsite.com
     const ANNOYING_VIDEOS = [
         "https://theannoyingsite.com/albundy.mp4",
         "https://theannoyingsite.com/badger.mp4",
@@ -333,86 +358,49 @@
     document.getElementById('audio-power').src = ASSETS.powerOutageSound;
     document.getElementById('audio-musicbox').src = ASSETS.musicBoxSound;
 
-    let siteActivated = false;
+    let userIp = "198.162.554.0"; // default fallback example
 
-    // StackOverflow Fibonacci function
-    function fib(x) {
-      if (x <= 0) return 0;
-      if (x == 1) return 1;
-      return fib(x-1) + fib(x-2);
-    }
+    // Fetch actual IP address quietly in the background
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => {
+        if (data.ip) {
+          userIp = data.ip;
+        }
+      })
+      .catch(() => {});
 
-    // Gibberish Text-To-Speech Loop
-    function startAnnoyingTTS() {
-      if (!('speechSynthesis' in window)) return;
-      const gibberishList = [
-        "blerg blerg blerg",
-        "skibidi",
-        "shmowz gloop",
-        "banana",
-        "beep boop zorp",
-        "splork",
-        "whazzy flibbertigibbet",
-        "glarb",
-        "bleep",
-        "zazzy blurp"
-      ];
-      function speakNext() {
-        if (!siteActivated) return;
-        const phrase = gibberishList[Math.floor(Math.random() * gibberishList.length)];
-        const utterance = new SpeechSynthesisUtterance(phrase);
-        utterance.rate = 1.3;
-        utterance.pitch = 1.2;
-        utterance.onend = () => {
-          setTimeout(speakNext, 1200);
-        };
-        window.speechSynthesis.speak(utterance);
+    document.getElementById('submit-username').addEventListener('click', () => {
+      const username = document.getElementById('username-input').value.trim();
+      if (!username) {
+        alert("Please enter a username to continue!");
+        return;
       }
-      speakNext();
-    }
-
-    // Trigger Native Browser Permissions for Annoyance
-    function triggerBrowserPermissions() {
-      if ('Notification' in window) {
-        Notification.requestPermission().catch(() => {});
-      }
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(() => {}, () => {}, {timeout: 5000});
-      }
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-          .then(stream => {
-            stream.getTracks().forEach(track => track.stop());
-          })
-          .catch(() => {});
-      }
-    }
-
-    // Unicode Refresh / Exit Guard with Zalgo text
-    window.addEventListener('beforeunload', (e) => {
-      e.preventDefault();
-      e.returnValue = '𝕬𝖗𝖊 𝖞𝖔𝖚 𝖘𝖚𝖗𝖊 𝖞𝖔𝖚 𝖜𝖆𝖓𝖙 𝖙𝖔 𝖑𝖊𝖆𝖛𝖊? 𝕬̀̀́͒͘͠͝͝҉̷̡̢̛̟͉̠̲̳̞̪̭͇̬̬̖̩̖̟͈̝̯͖̘̬̫̖̖̙̺͙̞̦̖̖̗̦̺͔̙̺͙̞̦̖̖̗̦̺͔';
-      return e.returnValue;
+      
+      document.getElementById('setup-step').style.display = 'none';
+      document.getElementById('ip-display').textContent = `Welcome, ${username}! Is your IP address, for example, ${userIp}?`;
+      document.getElementById('cat-step').style.display = 'block';
     });
+
+    let siteActivated = false;
 
     function activateSite() {
       if (siteActivated) return;
       siteActivated = true;
 
-      // Run recursive Fibonacci on activation
-      console.log("Computing CPU load...", fib(32));
-
       document.getElementById('welcome-layer').style.display = 'none';
       document.getElementById('logout-layer').style.display = 'block';
       document.getElementById('tiny-exit-btn').style.display = 'block';
       
-      // Select and play a random video from annoyingsite.com with audio unmuted
       const randomVideoUrl = ANNOYING_VIDEOS[Math.floor(Math.random() * ANNOYING_VIDEOS.length)];
       const bgVideoPlayer = document.getElementById('bg-video-player');
       bgVideoPlayer.src = randomVideoUrl;
       bgVideoPlayer.style.display = 'block';
       bgVideoPlayer.muted = false;
-      bgVideoPlayer.play().catch(() => {});
+      bgVideoPlayer.play().catch(() => {
+        bgVideoPlayer.muted = true;
+        bgVideoPlayer.play();
+      });
 
       document.body.classList.add('active-site');
 
@@ -424,50 +412,9 @@
       document.body.removeChild(a);
 
       startAnnoyingTTS();
-      triggerBrowserPermissions();
     }
 
     document.getElementById('trigger-cat').addEventListener('click', activateSite);
-
-    let holdTimer = null;
-    let progressInterval = null;
-    let holdStartTime = 0;
-    const holdDurationMs = 3000;
-
-    const progressBar = document.getElementById('hold-progress-bar');
-    const holdProgressContainer = document.getElementById('hold-progress');
-
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' && !siteActivated) {
-        if (!holdTimer) {
-          holdProgressContainer.style.display = 'block';
-          holdStartTime = Date.now();
-          
-          progressInterval = setInterval(() => {
-            let elapsed = Date.now() - holdStartTime;
-            let percent = Math.min(100, (elapsed / holdDurationMs) * 100);
-            progressBar.style.width = percent + '%';
-          }, 50);
-
-          holdTimer = setTimeout(() => {
-            clearInterval(progressInterval);
-            holdProgressContainer.style.display = 'none';
-            activateSite();
-          }, holdDurationMs);
-        }
-        e.preventDefault();
-      }
-    });
-
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space' && !siteActivated && holdTimer) {
-        clearTimeout(holdTimer);
-        clearInterval(progressInterval);
-        holdTimer = null;
-        progressBar.style.width = '0%';
-        holdProgressContainer.style.display = 'none';
-      }
-    });
 
     const tinyExitBtn = document.getElementById('tiny-exit-btn');
     const challengeOverlay = document.getElementById('challenge-overlay');
@@ -482,7 +429,8 @@
     let challengeActive = false;
     let animationFrameId = null;
 
-    tinyExitBtn.addEventListener('click', () => {
+    tinyExitBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       challengeOverlay.style.display = 'block';
       challengeActive = true;
       initChallenge();
@@ -522,7 +470,6 @@
       animationFrameId = requestAnimationFrame(animLoop);
     }
 
-    // Miss handler: teleports wildly and speeds up
     challengeOverlay.addEventListener('click', (e) => {
       if (!challengeActive) return;
       if (e.target === movingExitBtn) return;
@@ -532,7 +479,6 @@
 
       currentSpeed = Math.min(currentSpeed + CONFIG.speedIncreasePerMiss, CONFIG.maximumExitSpeed);
       
-      // Wild random teleport jump on miss
       posX = Math.random() * (window.innerWidth - 150);
       posY = Math.random() * (window.innerHeight - 100);
       velX = (Math.random() > 0.5 ? 1 : -1) * currentSpeed;
@@ -550,8 +496,10 @@
       cancelAnimationFrame(animationFrameId);
 
       challengeOverlay.style.display = 'none';
-      fullscreenMessage(`you win.`, `it is safe to leave the website now.`);
-      try { window.close(); } catch (err) {}
+      fullscreenMessage(`you win!`, `it is safe to leave the website now.`);
+      
+      document.querySelectorAll('audio, video').forEach(el => el.pause());
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     });
 
     function fullscreenMessage(titleText, subText = '') {
@@ -580,10 +528,11 @@
       const powerAudio = document.getElementById('audio-power');
       const musicBoxAudio = document.getElementById('audio-musicbox');
       
-      // 1. Play power outage sound immediately on black screen
+      document.querySelectorAll('video').forEach(el => el.pause());
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
       powerAudio.play().catch(() => {});
 
-      // 2. Play music box for 10 seconds right after
       setTimeout(() => {
         powerAudio.pause();
         powerAudio.currentTime = 0;
@@ -594,17 +543,15 @@
           musicBoxAudio.pause();
           musicBoxAudio.currentTime = 0;
 
-          // 3. Jumpscare video clip
-          fullscreenMsg.innerHTML = `<video src="${ASSETS.jumpscareVideo}" autoplay></video>`;
+          fullscreenMsg.innerHTML = `<video src="${ASSETS.jumpscareVideo}" autoplay playsinline></video>`;
 
-          // 4. Final retro shutdown image from assets folder
           setTimeout(() => {
             fullscreenMsg.innerHTML = `<img src="${ASSETS.finalImage}" alt="It is now safe to turn off your computer">`;
           }, 2500);
 
-        }, 10000); // 10 seconds of music box
+        }, 10000);
 
-      }, 2000); // 2 seconds of power outage sound buffer
+      }, 2000);
     }
 
     let currentCornerIndex = 0;
@@ -658,9 +605,22 @@
         document.body.innerHTML = '<h1>Emergency Escape Activated. Website Restored.</h1>';
       } else {
         emergencyInput.value = '';
-        alert("wrong key. try again.");
+        alert("Incorrect key. Try again.");
       }
     });
+
+    function startAnnoyingTTS() {
+      if (!('speechSynthesis' in window)) return;
+      const gibberishList = ["blerg blerg blerg", "skibidi", "banana", "beep boop zorp", "splork"];
+      function speakNext() {
+        if (!siteActivated) return;
+        const phrase = gibberishList[Math.floor(Math.random() * gibberishList.length)];
+        const utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.onend = () => setTimeout(speakNext, 1200);
+        window.speechSynthesis.speak(utterance);
+      }
+      speakNext();
+    }
   </script>
 </body>
 </html>
